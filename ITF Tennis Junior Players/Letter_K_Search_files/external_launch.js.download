@@ -1,0 +1,98 @@
+/*
+** Copyright IBM Corp., 2011. All Rights Reserved.
+*/
+
+function launchSyndicatedSlamTracker(syn, matchid,lang){
+	var tournStarted=true;
+	var slamtrackerWindow = "";
+	var slamtrackerWindow;
+	var slamtrackerWindow;
+	var launchPage = "http://www.wimbledon.com/"+lang+"/slamtracker/slamtracker.html?";
+	//alert(matchid);
+
+	var d = new Date();
+	var t = d.getTime();
+	launchPage += "ts=" + t;
+	launchPage += (syn)?"&syn="+syn:"&syn=none";
+	launchPage += "&ref=" + document.location.host + document.location.pathname;
+	launchPage += (matchid)?"&matchid="+matchid:"";
+
+	// prevent early launches of slamtracker
+	// if(syn)
+	// 	window.open('http://www.rolandgarros.com/'+lang+'/ibmrealtime/index.html');
+	//alert(launchPage);
+	
+	var OSName = "";
+    if (navigator.appVersion.indexOf("Mac")!=-1) OSName="MacOS";
+    height = ((navigator.appVersion.indexOf('Chrome')>0) && OSName != "")?'672':'672';
+	 
+	if (tournStarted) {
+		if (slamtrackerWindow.closed || slamtrackerWindow==""){
+			//apparently IE8 has an issue with a space in the window name so I added an _
+			slamtrackerWindow = window.open(launchPage, "IBM_SlamTracker", "width=1024,height="+height+",top=50,left=50,location='no',status='no',toolbar='no',resizable='no'");
+		if (slamtrackerWindow.opener == null) slamtrackerWindow.opener=self;
+		}
+		slamtrackerWindow.focus();
+	} else {
+		if(syn)
+		 	window.open('http://www.wimbledon.com/'+lang+'/slamtracker/index.html');
+	}
+}
+
+function launchSyndicatedScoreboard(syn, crt){
+	var scoreBoardWindow = "";
+	var scoreBoardWindow;
+	var scoreBoardWindow;
+	var launchPage = "http://www.wimbledon.com/en_GB/liteScores/launch.html?";
+	var d = new Date()
+	var t = d.getTime()
+	launchPage += "ts=" + t;
+	launchPage += (syn)?"&syn="+syn:"&syn=none";
+	launchPage += "&ref=" + document.location.host + document.location.pathname;
+	launchPage += (crt)?"&crt="+crt:"&crt=none";
+	//alert(launchPage);
+	if (scoreBoardWindow.closed || scoreBoardWindow==""){
+		scoreBoardWindow = window.open(launchPage,"syndWimScoreBoard","width=741,height=337,top=0,left=0,statusbar=0,resize=0")
+	if (scoreBoardWindow.opener == null) scoreBoardWindow.opener=self;
+	}
+	scoreBoardWindow.focus();
+}
+
+function launchZHSyndicatedScoreboard(syn, crt){
+	var scoreBoardWindow = "";
+	var scoreBoardWindow;
+	var scoreBoardWindow;
+	var launchPage = "http://www.wimbledon.com/zh_CN/liteScores/launch.html?";
+	var d = new Date()
+	var t = d.getTime()
+	launchPage += "ts=" + t;
+	launchPage += (syn)?"&syn="+syn:"&syn=none";
+	launchPage += "&ref=" + document.location.host + document.location.pathname;
+	launchPage += (crt)?"&crt="+crt:"&crt=none";
+	//alert(launchPage);
+	if (scoreBoardWindow.closed || scoreBoardWindow==""){
+		scoreBoardWindow = window.open(launchPage,"syndWimScoreBoard","width=741,height=337,top=0,left=0,statusbar=0,resize=0")
+	if (scoreBoardWindow.opener == null) scoreBoardWindow.opener=self;
+	}
+	scoreBoardWindow.focus();
+}
+
+function launchSyndicatedPointStream(syn, matchid){
+	var pointStreamWindow = "";
+	var pointStreamWindow;
+	var pointStreamWindow;
+	var launchPage = "http://www.wimbledon.com/en_GB/pointstream/ps_console.html?";
+
+	var d = new Date()
+	var t = d.getTime()
+	launchPage += "ts=" + t;
+	launchPage += (syn)?"&syn="+syn:"&syn=none";
+	launchPage += "&ref=" + document.location.host + document.location.pathname;
+	launchPage += (matchid)?"&matchid="+matchid:"";
+	//alert(launchPage);
+	if (pointStreamWindow.closed || pointStreamWindow==""){
+		pointStreamWindow = window.open(launchPage, "IBM PointStream", "width=935,height=573,top=50,left=50,location='no',status='no',toolbar='no',resizable='no'");
+	if (pointStreamWindow.opener == null) pointStreamWindow.opener=self;
+	}
+	pointStreamWindow.focus();
+}

@@ -1,0 +1,39 @@
+//Code to automically click show more on http://www.itftennis.com/juniors/players/player-search.aspx
+/*How to use:
+ * 1. Search for something on the website, such as 'a'
+ * 2. Open up the developer console (For Chrome, press control + shift + I)
+ * 3. Paste the code in the console
+ * Incremental sleep was added due to the website's really slow response time. Looking at network tab shows
+ * how it cancels if the button is clicked before the website responds. Without this, it may never load.
+ * Website becomes extremely slow (20+ second response times) for larger data sets such as S.
+ */
+
+function randomBetween(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function clickMore() {
+    i = 0;
+    minSleep = 1000;
+    maxSleep = 5000;
+    base = 0;
+    while (i < 5000) {
+        if (base == 100) {
+            minSleep += 2000;
+            maxSleep += 2000;
+            base = 0;
+        }
+        if (document.getElementById("ContentPlaceHolderDefault_ContentContainerCentre_BaselineContainerCentre_PlayerSearch_6_btnMore")) {
+            document.getElementById("ContentPlaceHolderDefault_ContentContainerCentre_BaselineContainerCentre_PlayerSearch_6_btnMore").click();
+        }
+        await sleep(randomBetween(minSleep, maxSleep));
+        base++;
+        i++;
+    }
+}
+
+clickMore();

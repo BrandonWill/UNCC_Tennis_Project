@@ -419,7 +419,7 @@ public class TableParser implements Runnable {
         } catch (IOException e) {
 
             String message = e.getMessage();
-            if (message.contains("reset") || message.contains("response code: 500")) {
+            if (message.contains("reset") || message.contains("response code: 500") || message.contains("Connection timed out")) {
                 //These can be ignored
                 new Thread(new TableParser(player)).start();
             } else {
@@ -499,6 +499,11 @@ public class TableParser implements Runnable {
 
     @Override
     public void run() {
-        parseBiography(player);
+        try {
+            parseBiography(player);
+        } catch (Exception e) {
+            System.out.println("Error on player ID: " +player.getPlayerID());
+            e.printStackTrace();
+        }
     }
 }

@@ -373,7 +373,8 @@ public class Browser extends JFrame {
 
     private enum BOT_STATE {
         FINDING_ALL_PLAYERS,
-        READING_ALL_PLAYERS
+        READING_ALL_PLAYERS,
+        WRITING_TO_DATABASE
     }
 
     private class TitleUpdater implements Runnable {
@@ -393,6 +394,8 @@ public class Browser extends JFrame {
                             browserFrame.setTitle(state.name() + "(" + (char) currentChar + ") -->" + location);
                         } else if (state.equals(BOT_STATE.READING_ALL_PLAYERS)) {
                             browserFrame.setTitle(state.name() +  "-->" + currentPlayerLocation + "/" +allPlayers.size());
+                        } else if (state.equals(BOT_STATE.WRITING_TO_DATABASE)) {
+                            browserFrame.setTitle(state.name() +  "-->" + SQLiteJDBC.getPlayerWriteLocation() + "/" +allPlayers.size());
                         }
                     }
                 });
@@ -514,8 +517,17 @@ public class Browser extends JFrame {
                         }
 //                        System.out.println("ID: " +playerToParse.getPlayerID());
 //                        TableParser.parseBiography(playerToParse);
+//                        ArrayList<Player> playersInTournaments = new ArrayList<>();
+//                        for (Player player : allPlayers) {
+//                            if (player.getTournaments().size() > 0) {
+//                                playersInTournaments.add(player);
+//                            }
+//                        }
+//
+//                        System.out.println("Number of players found in tournaments: " +playersInTournaments.size());
 
                         SQLiteJDBC.addPlayers(new ArrayList<>(allPlayers));
+                        state = BOT_STATE.WRITING_TO_DATABASE;
                         writeToFile(allPlayers);
                     }
                 }

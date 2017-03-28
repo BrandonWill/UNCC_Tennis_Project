@@ -19,7 +19,6 @@ public class Player {
     private String careerHighSingles;
     private String careerHighDoubles;
     private String careerYearEnd;
-
     private LocalDate age;
 
 

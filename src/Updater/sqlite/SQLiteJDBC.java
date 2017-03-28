@@ -6,6 +6,7 @@ import Updater.Tennis.Player;
 import Updater.Tennis.Tournament;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -13,6 +14,15 @@ import java.util.Arrays;
  * Created by Brandon on 2/3/2017.
  */
 public class SQLiteJDBC {
+    private static int playerWriteLocation = 0;
+
+    public static int getPlayerWriteLocation() {
+        return playerWriteLocation;
+    }
+
+    public static void setPlayerWriteLocation(int playerWriteLocation) {
+        SQLiteJDBC.playerWriteLocation = playerWriteLocation;
+    }
 
     private static void connectToDatabase() {
         Connection c = null;
@@ -62,7 +72,7 @@ public class SQLiteJDBC {
 
             stmt = c.createStatement();
             sql =   "CREATE TABLE TOURNAMENTS " +
-                    "(TOURNAMENTID    INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "(TOURNAMENTID    INTEGER PRIMARY KEY," +
                     "NAME             BLOB," +
                     "TOURNAMENTDATE   BLOB," +
                     "VENUE            BLOB," +
@@ -71,7 +81,7 @@ public class SQLiteJDBC {
 
             stmt = c.createStatement();
             sql =   "CREATE TABLE GAMES " +
-                    "(GAMEID          INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "(GAMEID          INTEGER PRIMARY KEY," +
                     "NUMBEROFPLAYERS  BLOB," +
                     "GRADE            BLOB," +
                     "ENTRY            BLOB," +
@@ -81,7 +91,7 @@ public class SQLiteJDBC {
 
             stmt = c.createStatement();
             sql =   "CREATE TABLE MATCHES " +
-                    "(MATCHID       INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "(MATCHID       INTEGER PRIMARY KEY," +
                     "MATCHTYPE      BLOB," +
                     "RECORD         BLOB," +
                     "OPPONENTNAME   BLOB," +
@@ -113,7 +123,7 @@ public class SQLiteJDBC {
             sql = "DROP TABLE TOURNAMENTS";
             stmt.executeUpdate(sql);
             stmt = c.createStatement();
-            sql = "DROP TABLE GAMEs";
+            sql = "DROP TABLE GAMES";
             stmt.executeUpdate(sql);
             stmt = c.createStatement();
             sql = "DROP TABLE MATCHES";
@@ -134,8 +144,10 @@ public class SQLiteJDBC {
 
         Connection c = null;
         Statement stmt = null;
+        System.out.println("Adding players to database");
         try {
             for (Player player : players) {
+                playerWriteLocation++;
                 Class.forName("org.sqlite.JDBC");
                 c = DriverManager.getConnection("jdbc:sqlite:TennisPlayers.db");
                 PreparedStatement preparedStatement = null;
@@ -184,52 +196,52 @@ public class SQLiteJDBC {
                     if (tournamentIDS.size() > 0 ) {
                         for(Integer tournamentID : tournamentIDS) {
                             sql = "INSERT INTO TOURNAMENTS" +
-                                    "(NAME, TOURNAMENTDATE, VENUE, GAMES) VALUES" +
+                                    "(TOURNAMENTID, NAME, TOURNAMENTDATE, VENUE, GAMES) VALUES" +
                                     "(?,?,?,?,?)";
                             Tournament tournament = player.getTournament(tournamentID);
                             preparedStatement = c.prepareStatement(sql);
-//                            preparedStatement.setInt(1, tournamentID);
-                            preparedStatement.setString(1, tournament.getName());
-                            preparedStatement.setString(2, tournament.getDate());
-                            preparedStatement.setString(3, tournament.getVenue());
+                            preparedStatement.setInt(1, tournamentID);
+                            preparedStatement.setString(2, tournament.getName());
+                            preparedStatement.setString(3, tournament.getDate());
+                            preparedStatement.setString(4, tournament.getVenue());
 
                             ArrayList<Integer> gameIDs = new ArrayList<>();
                             for (Game game : tournament.getGames()) {
                                 gameIDs.add(game.getID());
                             }
-                            preparedStatement.setString(4, gameIDs.toString());
+                            preparedStatement.setString(5, gameIDs.toString());
                             preparedStatement.executeUpdate();
 
                             for (Integer gameID : gameIDs) {
                                 sql = "INSERT INTO GAMES" +
-                                        "(NUMBEROFPLAYERS, GRADE, ENTRY, SURFACE, MATCHES) VALUES" +
+                                        "(GAMEID, NUMBEROFPLAYERS, GRADE, ENTRY, SURFACE, MATCHES) VALUES" +
                                         "(?,?,?,?,?,?)";
                                 Game game = tournament.getGame(gameID);
                                 preparedStatement = c.prepareStatement(sql);
-//                                preparedStatement.setInt(1, gameID);
-                                preparedStatement.setString(1, game.getNumberOfPlayers());
-                                preparedStatement.setString(2, game.getGrade());
+                                preparedStatement.setInt(1, gameID);
+                                preparedStatement.setString(2, game.getNumberOfPlayers());
                                 preparedStatement.setString(3, game.getGrade());
-                                preparedStatement.setString(4, game.getSurface());
+                                preparedStatement.setString(4, game.getGrade());
+                                preparedStatement.setString(5, game.getSurface());
 
                                 ArrayList<Integer> matchIDs = new ArrayList<>();
                                 for (Match match : game.getMatches()) {
                                     matchIDs.add(match.getID());
                                 }
-                                preparedStatement.setString(5, matchIDs.toString());
+                                preparedStatement.setString(6, matchIDs.toString());
                                 preparedStatement.executeUpdate();
 
                                 for (Integer matchID : matchIDs) {
                                     sql = "INSERT INTO MATCHES" +
-                                            "(MATCHTYPE, RECORD, OPPONENTNAME, SCORE) VALUES" +
+                                            "(MATCHID, MATCHTYPE, RECORD, OPPONENTNAME, SCORE) VALUES" +
                                             "(?,?,?,?,?)";
                                     Match match = game.getMatch(matchID);
                                     preparedStatement = c.prepareStatement(sql);
-//                                    preparedStatement.setInt(1, matchID);
-                                    preparedStatement.setString(1, match.getMatchType());
-                                    preparedStatement.setString(2, match.getRecord());
-                                    preparedStatement.setString(3, match.getOpponentName());
-                                    preparedStatement.setString(4, match.getScore());
+                                    preparedStatement.setInt(1, matchID);
+                                    preparedStatement.setString(2, match.getMatchType());
+                                    preparedStatement.setString(3, match.getRecord());
+                                    preparedStatement.setString(4, match.getOpponentName());
+                                    preparedStatement.setString(5, match.getScore());
 
                                     preparedStatement.executeUpdate();
                                 }
@@ -270,14 +282,22 @@ public class SQLiteJDBC {
             stmt = c.createStatement();
             ResultSet rs;
 
+
+            ArrayList<Player> players = new ArrayList<>();
             rs = stmt.executeQuery("SELECT * FROM PLAYERS");
             System.out.println("Reading players");
             while ( rs.next() ) {
+                Player player = new Player();
                 int playerID = rs.getInt("PLAYERID");
                 String name = rs.getString("PLAYERNAME");
                 String gender = rs.getString("GENDER");
                 ArrayList<Integer> tournamentIDs = stringToIntegerArray(rs.getString("TOURNAMENTS"));
                 String age = rs.getString("AGE");
+
+                player.setPlayerID(playerID);
+                player.setName(name);
+                player.setGender(gender);
+                player.setAge(LocalDate.parse(age));
                 System.out.println(playerID);
                 System.out.println(name);
                 System.out.println(gender);
@@ -306,13 +326,44 @@ public class SQLiteJDBC {
         }
     }
 
+    public static void main(String args[]) {
+        readingTest();
+    }
+
     private static ArrayList<Integer> stringToIntegerArray(String string) {
         string = string.replaceAll(" ", "").replace("[", "").replace("]", "");
         String[] sArray = string.split(",");
         ArrayList<Integer> integerArrayList = new ArrayList<>();
         for(String s : sArray) {
-            integerArrayList.add(Integer.parseInt(s));
+            if (isInteger(s)) {
+                integerArrayList.add(Integer.parseInt(s));
+            }
         }
         return integerArrayList;
+    }
+
+
+
+    public static boolean isInteger(String s) {
+        return isInteger(s, 10);
+    }
+
+    public static boolean isInteger(String s, int radix) {
+        if (s.isEmpty()) {
+            return false;
+        }
+        for (int i = 0; i < s.length(); i++) {
+            if (i == 0 && s.charAt(i) == '-') {
+                if (s.length() == 1) {
+                    return false;
+                } else {
+                    continue;
+                }
+            }
+            if (Character.digit(s.charAt(i), radix) < 0) {
+                return false;
+            }
+        }
+        return true;
     }
 }

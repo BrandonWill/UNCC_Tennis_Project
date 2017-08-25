@@ -221,7 +221,7 @@ public class SQLiteJDBC {
                                 preparedStatement.setInt(1, gameID);
                                 preparedStatement.setString(2, game.getNumberOfPlayers());
                                 preparedStatement.setString(3, game.getGrade());
-                                preparedStatement.setString(4, game.getGrade());
+                                preparedStatement.setString(4, game.getEntry());
                                 preparedStatement.setString(5, game.getSurface());
 
                                 ArrayList<Integer> matchIDs = new ArrayList<>();

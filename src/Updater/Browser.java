@@ -525,9 +525,8 @@ public class Browser extends JFrame {
 //                        }
 //
 //                        System.out.println("Number of players found in tournaments: " +playersInTournaments.size());
-
-                        SQLiteJDBC.addPlayers(new ArrayList<>(allPlayers));
                         state = BOT_STATE.WRITING_TO_DATABASE;
+                        SQLiteJDBC.addPlayers(new ArrayList<>(allPlayers));
                         writeToFile(allPlayers);
                     }
                 }

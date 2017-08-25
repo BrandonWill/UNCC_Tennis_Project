@@ -304,7 +304,7 @@ public class TableParser implements Runnable {
 //                            System.out.println("Surface: " +surface);
                         }
 
-                        if (line.contains("Main Draw")) {
+                        if (line.contains("Main Draw") || line.contains("Qualifying Draw")) {
                             boolean continueParsing = true;
 
 //                            System.out.println("<=============== Started matches here ====================>");
